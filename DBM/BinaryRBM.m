@@ -1,3 +1,22 @@
+%BinaryRBM Restricted Boltzmann Machines
+%
+% RBM models dealing with binary variables
+% $ P(v,h;W,b,c) = P^* (v,h;W,b,c) / Z $
+% $ P^* (v,h;W,b,c) = exp(-E(v,h;W,b,c)) $
+% $ Z = Sigma_{v,h} P^* (v,h;W,b,c) $
+% $ E(v,h;W,b,c) = -b'v -c'h - v'Wh $
+%
+% Examples 1
+% objRBM = BinaryRBM(10, 50);
+%
+% Examples 2
+% objRBM = BinaryRBM(W, b, c);
+%
+% See also RBM, GaussianRBM, Hypernetworks, DBM, RBMLearner, RBMLLE
+%
+% Copyright 2013- Kim, Kwonill
+% kwonill.kim@gmail.com or kikim@bi.snu.ac.kr
+% $Revision: 1.0 $  $Date: 2013/06/04 12:22:00 $
 classdef BinaryRBM < RBM
     
     properties
@@ -35,36 +54,73 @@ classdef BinaryRBM < RBM
         % V: values of visible (D x N)
         % H: values of hidden (M x N)
         % E: $E(v,h;W,b,c)$. value of energy function of RBM (1 x N)
-        E = computeEnergy(obj, V, H)
+        function E = computeEnergy(obj, V, H)
+            E = - obj.visBias'*V - obj.hidBias'*H - dot(V, obj.vhWeight*H);
+        end
         
         % Compute log unnormalized Marginal Probability of V. $ln P^* (v)$
         % V: values of visible (D x N)
         % logUnnormMarginP: $ln P^* (v)$
-        logUnnormMarginP = computeLogUnnormalizedMarginalProb(obj, V)
+        function logUnnormMarginP = computeLogUnnormalizedMarginalProb(obj, V)
+            N = size(V,2);
+            logUnnormMarginP = obj.visBias'*V + ...
+                sum(log(1 + exp(repmat(obj.hidBias,1,N) + obj.vhWeight'*V)),1);
+        end
         
         
         % Compute conditional probability of hidden given visible
         % V: values of hidden (D x N)
         % probH_V: $P(H|V)$ (M x N)
-        probH_V = getProbHGivenV(obj, V)
+        function probH_V = getProbHGivenV(obj, V)
+            N = size(V,2);
+            probH_V = logsig(repmat(obj.hidBias,1,N) + obj.vhWeight'*V);
+        end
         
         % Sample hidden given visible
         % V: values of visible (D x N)
-        % H_V: sampled hidden (M x N)
+        % H: sampled hidden (M x N)
         % probH_V: $P(H|V)$ (M x N)
-        [H_V, probH_V] = sampleHGivenV(obj, V)
+        function [H, probH_V] = sampleHGivenV(obj, V)
+            N = size(V,2);
+            M = size(obj.vhWeight,2);
+            probH_V = obj.getProbHGivenV(V);
+            H = probH_V >= rand(M,N);
+        end
         
         
         % Compute conditional probability of visible given hidden
         % H: values of hidden (M x N)
         % probV_H: P(V|H) (1 x N)
-        probV_H = getProbVGivenH(obj, H)
+        function probV_H = getProbVGivenH(obj, H)
+            N = size(H,2);
+            probV_H = logsig(repmat(obj.visBias,1,N) + obj.vhWeight*H);
+        end
 
         % Sample visible given hidden
         % H: values of hidden (M x N)
-        % V_H: sampled visible (D x N)
+        % V: sampled visible (D x N)
         % probV_H: P(V|H) (D x N)
-        [V_H, probV_H] = sampleVGivenH(obj, H)
+        function [V, probV_H] = sampleVGivenH(obj, H)
+            N = size(H,2);
+            D = size(obj.vhWeight,1);
+            probV_H = obj.getProbVGivenH(H);
+            V = probV_H >= rand(D,N);
+        end
+        
+        % Sample new visible after numStep Gibbs sampling
+        % V: sampled visible (D x N)
+        % initV: initial visible (D x N)
+        % numStep: # step of Gibbs sampling (scalar, default=1)
+        function V = sampleNextV(obj, initV, numStep)
+            if nargin < 3, numStep = 1; end
+            
+            V = initV;
+            for i = 1:numStep
+                H = obj.sampleHGivenV(V);
+                V = obj.sampleVGivenH(H);
+            end
+        end
         
     end
+    
 end

@@ -96,5 +96,10 @@ classdef RBM
         % probV_H: P(V|H) (D x N)
         [V_H, probV_H] = sampleVGivenH(obj, H)
         
+        % Sample new visible after numStep Gibbs sampling
+        % V: sampled visible (D x N)
+        % initV: initial visible (D x N)
+        % numStep: # step of Gibbs sampling (scalar, default=1)
+        V = sampleNextV(obj, initV, numStep)
     end
 end

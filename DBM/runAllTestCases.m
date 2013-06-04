@@ -1,4 +1,8 @@
 clear all;
 
 testCase = TestBinaryRBM;
-res = run(testCase);
+run(testCase)
+
+
+% testCase = TestMLUtil;
+% res = run(testCase);
