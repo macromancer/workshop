@@ -1,4 +1,4 @@
 clear all;
 
-testCase = TestRBM;
+testCase = TestBinaryRBM;
 res = run(testCase);

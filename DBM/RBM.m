@@ -89,7 +89,7 @@ classdef RBM
         % H: values of hidden (M x N)
         % probV_H: P(V|H) (1 x N)
         probV_H = getProbVGivenH(obj, H)
-                
+
         % Sample visible given hidden
         % H: values of hidden (M x N)
         % V_H: sampled visible (D x N)
