@@ -1,8 +1,11 @@
-clear all;
+% clear all;
 
 testCase = TestBinaryRBM;
-run(testCase)
+res = run(testCase);
 
+testCase = TestMLUtil;
+res = run(testCase);
 
-% testCase = TestMLUtil;
-% res = run(testCase);
+testCase = TestLLEwithBruteMethodforBinaryRBM;
+res = run(testCase);
+
