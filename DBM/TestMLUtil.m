@@ -3,8 +3,26 @@ classdef TestMLUtil < matlab.unittest.TestCase
     methods (Test)
         function testLogSumExp(testCase)
             X = [1000 1001 1000; -1000 -999 -1000];
-            lse1 = MLUtil.logSumExp(X,1);
-            testCase.verifyEqual(lse1, [1000 1001 1000]);
+            lse = MLUtil.logSumExp(X,1);
+            testCase.verifyEqual(lse, [1000 1001 1000]);
+            
+            X = [1000 1001 1000; -1000 -999 -1000] * 1e-2;
+            lse = MLUtil.logSumExp(X,2);
+            expected = log(sum(exp(X),2));
+            testCase.verifyEqual(lse, expected, 'AbsTol', 1e-5);
+        end
+        
+        function testLogDiffExp(testCase)
+            X = [1000 1001 1000; -1000 -999 -1000];
+            lde = MLUtil.logDiffExp(X,2);
+            expected = [1000 + log(exp(1)-1) 1000 + log(1-exp(1));
+                        -1000 + log(exp(1)-1) -1000 + log(1-exp(1))];
+            testCase.verifyEqual(lde, expected, 'AbsTol', 1e-5);
+            
+            X = [1000 1001 1000; -1000 -999 -1000] * 1e-2;
+            lde = MLUtil.logDiffExp(X,2);
+            expected = log(diff(exp(X),[],2));
+            testCase.verifyEqual(lde, expected, 'AbsTol', 1e-5);
         end
         
         function testEnumerateEveryPossibleStates(testCase)

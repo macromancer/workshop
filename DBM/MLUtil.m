@@ -16,6 +16,8 @@ classdef MLUtil
         % dim: dimension to sum (scalar)
         %
         % This program was originally written by Sam Roweis
+        % and copied from R. Salakhutdinov's code
+        % http://www.utstat.toronto.edu/~rsalakhu/rbm_ais.html
         function lse = logSumExp(X, dim)
             if(length(X(:))==1) lse=X; return; end
 
@@ -29,6 +31,26 @@ classdef MLUtil
             lse = alpha+log(sum(exp(X-repmat(alpha,repdims)),dim));
         end
         
+        
+        % log(diff([x1 x2 x3 ...]), dim))
+        % lde: results
+        % X: input matrix
+        % dim: dimension to sum (scalar)
+        function lde = logDiffExp(X,dim)
+            if(length(X(:))==1) lde=X; return; end
+
+            dimX=size(X);
+            if(nargin<2) 
+              dim=find(dimX>1);
+            end
+
+            alpha = max(X,[],dim);
+            repdims = ones(size(dimX)); repdims(dim) = dimX(dim);
+            repdims_diff = repdims; repdims_diff(dim) = dimX(dim) - 1;
+            
+            lde = repmat(alpha, repdims_diff) + ...
+                log(diff(exp(X-repmat(alpha,repdims)),[],dim));
+        end
         
         % Enumerate all possible states
         % (to compute log likelihood through brute-force method)

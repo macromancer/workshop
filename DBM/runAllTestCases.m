@@ -9,3 +9,6 @@ res = run(testCase);
 testCase = TestLLEwithBruteMethodforBinaryRBM;
 res = run(testCase);
 
+testCase = TestLLEwithAISforBinaryRBM;
+res = run(testCase);
+
