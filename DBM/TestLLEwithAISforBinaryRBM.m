@@ -38,7 +38,7 @@ classdef TestLLEwithAISforBinaryRBM < matlab.unittest.TestCase
             
             fprintf('[%g ~ %g ~ %g] vs. %g\n', logZ_down, logZ, logZ_up, expectedLogZ);
             
-            testCase.verifyEqual(logZ, expectedLogZ, 'AbsTol', 1e-2);
+            testCase.verifyEqual(logZ, expectedLogZ, 'AbsTol', 1e-1);
         end
         
         function testEstimateLogLikelihood(testCase)
@@ -58,7 +58,7 @@ classdef TestLLEwithAISforBinaryRBM < matlab.unittest.TestCase
             logL = objLLE_AIS.estimateLogLikelihood(V, options);
             
 %             fprintf('%g vs. %g\n', [logL; expectedLogL]);
-            testCase.verifyEqual(logL, expectedLogL, 'AbsTol', 1e-2);
+            testCase.verifyEqual(logL, expectedLogL, 'AbsTol', 2e-2);
         end
 %         
 %         function testEstimateLogPartitionFn(testCase)
