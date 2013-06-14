@@ -24,8 +24,10 @@ classdef MiniBatchLearner < Learnable
             numBatch = length(miniBatchSet);
             
             for iter = 1:obj.maxIter
+                fprintf('iter=%d ', iter);
                 cumNumData = 0;
                 for i = 1: numBatch
+                    fprintf('mini-batch=%d ', i);
                     cumNumData = cumNumData + size(miniBatchSet{i},2);
                     [obj.objToLearn, results] = obj.objToLearn.learn(miniBatchSet{i}, options);
                 end

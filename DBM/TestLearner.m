@@ -97,5 +97,27 @@ classdef TestLearner < matlab.unittest.TestCase
             
         end
         
+        function testCrossValidationLearner_withMiniBatch(testCase)
+
+            D = 2; N = 100; K = 3;
+            maxBatchSize = 10; maxIter = 2;
+            
+            trueMean = randn(D,1);
+            trueCov = cov(randn(3,D));
+            fprintf('\n¥ì_true=%s, ¥Ò_true=%s\n', mat2str(trueMean,3), mat2str(trueCov,3));
+            
+            objLearner = DummyLearner(D);
+            objMBLearner = MiniBatchLearner(objLearner, maxBatchSize, maxIter);
+            objCVLearner = CrossValidationLearner(objMBLearner, K);
+            
+            trainData = chol(trueCov)' * randn(D, N) + repmat(trueMean, 1, N);
+            options.trueMean = trueMean;
+            options.trueCov = trueCov;
+            [objCVLearner, results] = objCVLearner.learn(trainData, options);
+            
+            testCase.verifyEqual(results.Error_mean, 0, 'AbsTol', 2e-2);
+            testCase.verifyEqual(results.Error_cov, 0, 'AbsTol', 2e-2);
+            
+        end
     end
 end

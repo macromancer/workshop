@@ -25,6 +25,7 @@ classdef CrossValidationLearner < Learnable
             cumNumTestData = 0;
             cvResult = cell(1,obj.K);
             for k = 1: obj.K
+                fprintf('CD-%d ', k);
                 trainData = data(:, idxCV ~= k);
                 testData = data(:, idxCV == k);
                 
